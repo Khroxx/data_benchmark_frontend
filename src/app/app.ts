@@ -6,7 +6,18 @@ import { Component } from '@angular/core';
   styleUrl: './app.scss',
 })
 export class App {
-  protected sizeKb = 100;
+  protected selectedDataPresetId = 'json-m';
+  protected selectedRuns = 50;
+
+  protected readonly dataPresets = [
+    { id: 'json-s', label: 'JSON S', file: 'flat.json', sizeKb: 10 },
+    { id: 'json-m', label: 'JSON M', file: 'flat.json', sizeKb: 100 },
+    { id: 'json-l', label: 'JSON L', file: 'nested.json', sizeKb: 500 },
+    { id: 'csv-m', label: 'CSV M', file: 'table.csv', sizeKb: 100 },
+    { id: 'blob-l', label: 'Blob L', file: 'blob.txt', sizeKb: 1500 },
+  ];
+
+  protected readonly runPresets = [1, 50, 250, 1000];
 
   protected readonly backends = [
     { key: 'golang', label: 'Golang' },
@@ -15,14 +26,15 @@ export class App {
     { key: 'django', label: 'Django' },
   ];
 
-  protected onSizeKbInput(event: Event): void {
-    const value = Number((event.target as HTMLInputElement).value);
+  protected selectDataPreset(presetId: string): void {
+    this.selectedDataPresetId = presetId;
+  }
 
-    if (Number.isNaN(value)) {
-      this.sizeKb = 100;
-      return;
-    }
+  protected selectRuns(runs: number): void {
+    this.selectedRuns = runs;
+  }
 
-    this.sizeKb = Math.min(50000, Math.max(1, Math.trunc(value)));
+  protected get selectedDataPreset() {
+    return this.dataPresets.find((preset) => preset.id === this.selectedDataPresetId);
   }
 }

@@ -3,25 +3,46 @@
     <header class="panel-header">
       <p class="eyebrow">Data Benchmark Frontend</p>
       <h1 id="benchmark-title">Benchmark Dashboard</h1>
-      <p class="subtitle">Wähle zuerst die Datenmenge X und dann ein Backend.</p>
+      <p class="subtitle">Wähle feste Datei-Presets und feste Wiederholungen, dann drücke ein Backend.</p>
     </header>
 
     <div class="panel-body" role="status" aria-live="polite">
-      <div class="size-input-row">
-        <label class="size-label" for="size-kb-input">Datenmenge X (KB)</label>
-        <input
-          id="size-kb-input"
-          class="size-input"
-          type="number"
-          min="1"
-          max="50000"
-          step="1"
-          [value]="sizeKb"
-          (input)="onSizeKbInput($event)"
-        />
+      <div class="control-section">
+        <p class="panel-note">Datei-Preset</p>
+        <div class="preset-grid" role="group" aria-label="Datei Presets">
+          @for (preset of dataPresets; track preset.id) {
+            <button
+              class="preset-button"
+              type="button"
+              [class.is-selected]="preset.id === selectedDataPresetId"
+              (click)="selectDataPreset(preset.id)"
+            >
+              <span class="preset-title">{{ preset.label }}</span>
+              <span class="preset-meta">{{ preset.file }} - {{ preset.sizeKb }} KB</span>
+            </button>
+          }
+        </div>
       </div>
 
-      <p class="size-hint">Aktuell: {{ sizeKb }} KB pro Request.</p>
+      <div class="control-section">
+        <p class="panel-note">Wiederholungen pro Klick</p>
+        <div class="run-grid" role="group" aria-label="Run Anzahl">
+          @for (runs of runPresets; track runs) {
+            <button
+              class="run-button"
+              type="button"
+              [class.is-selected]="runs === selectedRuns"
+              (click)="selectRuns(runs)"
+            >
+              {{ runs }}x
+            </button>
+          }
+        </div>
+      </div>
+
+      <p class="size-hint">
+        Aktiv: {{ selectedDataPreset?.file }} ({{ selectedDataPreset?.sizeKb }} KB) | {{ selectedRuns }} Aufrufe.
+      </p>
 
       <div class="backend-grid" role="group" aria-label="Benchmark Backends">
         @for (backend of backends; track backend.key) {

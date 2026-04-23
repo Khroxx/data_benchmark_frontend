@@ -71,32 +71,10 @@ h1 {
 	margin: 0;
 }
 
-.size-input-row {
+.control-section {
 	display: flex;
-	align-items: center;
-	gap: 0.75rem;
-	flex-wrap: wrap;
-}
-
-.size-label {
-	font-weight: 700;
-	color: #3d3127;
-}
-
-.size-input {
-	width: min(240px, 100%);
-	padding: 0.55rem 0.7rem;
-	border-radius: 8px;
-	border: 1px solid #b99c82;
-	background: #fffdfa;
-	color: #2f241c;
-	font-size: 0.98rem;
-	font-weight: 600;
-}
-
-.size-input:focus {
-	outline: 2px solid #c78e63;
-	outline-offset: 2px;
+	flex-direction: column;
+	gap: 0.6rem;
 }
 
 .size-hint {
@@ -113,6 +91,70 @@ h1 {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
 	gap: 0.8rem;
+}
+
+.preset-grid {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0.6rem;
+}
+
+.preset-button {
+	appearance: none;
+	border: 1px solid #cab39b;
+	border-radius: 10px;
+	background: #fffdf9;
+	padding: 0.65rem 0.7rem;
+	text-align: left;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	gap: 0.2rem;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.preset-title {
+	font-size: 0.9rem;
+	font-weight: 800;
+	color: #33271f;
+}
+
+.preset-meta {
+	font-size: 0.76rem;
+	color: #6b584a;
+}
+
+.run-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.6rem;
+}
+
+.run-button {
+	appearance: none;
+	border: 1px solid #cab39b;
+	border-radius: 10px;
+	background: #fffdf9;
+	padding: 0.65rem;
+	text-align: center;
+	font-size: 0.92rem;
+	font-weight: 800;
+	color: #33271f;
+	cursor: pointer;
+	transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+
+.preset-button:hover,
+.run-button:hover {
+	border-color: #956d4c;
+	box-shadow: 0 6px 16px rgba(72, 49, 28, 0.12);
+}
+
+.preset-button.is-selected,
+.run-button.is-selected {
+	border-color: #8b5f3f;
+	background: #f4e7da;
+	box-shadow: inset 0 0 0 1px rgba(139, 95, 63, 0.35);
 }
 
 .backend-button {
@@ -155,7 +197,11 @@ h1 {
 		grid-template-columns: 1fr;
 	}
 
-	.size-input {
-		width: 100%;
+	.preset-grid {
+		grid-template-columns: 1fr;
+	}
+
+	.run-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }
