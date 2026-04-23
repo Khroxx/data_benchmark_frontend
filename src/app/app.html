@@ -51,7 +51,7 @@
             type="button"
             [class.is-selected]="backend.key === selectedBackendKey"
             [attr.data-backend]="backend.key"
-            (click)="selectBackend(backend.key)"
+            (click)="runBackendRequest(backend.key)"
           >
             {{ backend.label }}
           </button>
