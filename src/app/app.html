@@ -3,10 +3,26 @@
     <header class="panel-header">
       <p class="eyebrow">Data Benchmark Frontend</p>
       <h1 id="benchmark-title">Benchmark Dashboard</h1>
-      <p class="subtitle">Wähle ein Backend.</p>
+      <p class="subtitle">Wähle zuerst die Datenmenge X und dann ein Backend.</p>
     </header>
 
     <div class="panel-body" role="status" aria-live="polite">
+      <div class="size-input-row">
+        <label class="size-label" for="size-kb-input">Datenmenge X (KB)</label>
+        <input
+          id="size-kb-input"
+          class="size-input"
+          type="number"
+          min="1"
+          max="50000"
+          step="1"
+          [value]="sizeKb"
+          (input)="onSizeKbInput($event)"
+        />
+      </div>
+
+      <p class="size-hint">Aktuell: {{ sizeKb }} KB pro Request.</p>
+
       <div class="backend-grid" role="group" aria-label="Benchmark Backends">
         @for (backend of backends; track backend.key) {
           <button class="backend-button" type="button" [attr.data-backend]="backend.key">

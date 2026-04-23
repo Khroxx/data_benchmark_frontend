@@ -71,6 +71,39 @@ h1 {
 	margin: 0;
 }
 
+.size-input-row {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+.size-label {
+	font-weight: 700;
+	color: #3d3127;
+}
+
+.size-input {
+	width: min(240px, 100%);
+	padding: 0.55rem 0.7rem;
+	border-radius: 8px;
+	border: 1px solid #b99c82;
+	background: #fffdfa;
+	color: #2f241c;
+	font-size: 0.98rem;
+	font-weight: 600;
+}
+
+.size-input:focus {
+	outline: 2px solid #c78e63;
+	outline-offset: 2px;
+}
+
+.size-hint {
+	font-size: 0.92rem;
+	color: #5b4b3f;
+}
+
 .panel-note {
 	font-weight: 600;
 	color: #3d3127;
@@ -120,5 +153,9 @@ h1 {
 
 	.backend-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.size-input {
+		width: 100%;
 	}
 }
