@@ -3,11 +3,17 @@
     <header class="panel-header">
       <p class="eyebrow">Data Benchmark Frontend</p>
       <h1 id="benchmark-title">Benchmark Dashboard</h1>
-      <p class="subtitle">
-      </p>
+      <p class="subtitle">Wähle ein Backend.</p>
     </header>
 
     <div class="panel-body" role="status" aria-live="polite">
+      <div class="backend-grid" role="group" aria-label="Benchmark Backends">
+        @for (backend of backends; track backend.key) {
+          <button class="backend-button" type="button" [attr.data-backend]="backend.key">
+            {{ backend.label }}
+          </button>
+        }
+      </div>
     </div>
   </section>
 </main>

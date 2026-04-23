@@ -71,6 +71,43 @@ h1 {
 	margin: 0;
 }
 
+.panel-note {
+	font-weight: 600;
+	color: #3d3127;
+}
+
+.backend-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.8rem;
+}
+
+.backend-button {
+	appearance: none;
+	border: 1px solid #b99c82;
+	background: linear-gradient(180deg, #fffdfa 0%, #f0e2d4 100%);
+	color: #2f241c;
+	padding: 0.85rem 1rem;
+	border-radius: 10px;
+	font-size: 1rem;
+	font-weight: 700;
+	cursor: pointer;
+	transition:
+		transform 120ms ease,
+		box-shadow 120ms ease,
+		border-color 120ms ease;
+}
+
+.backend-button:hover {
+	transform: translateY(-1px);
+	border-color: #926948;
+	box-shadow: 0 8px 20px rgba(72, 49, 28, 0.16);
+}
+
+.backend-button:active {
+	transform: translateY(0);
+}
+
 @media (max-width: 720px) {
 	.benchmark-shell {
 		padding: 1rem;
@@ -79,5 +116,9 @@ h1 {
 	.benchmark-panel {
 		min-height: calc(100dvh - 2rem);
 		border-radius: 18px;
+	}
+
+	.backend-grid {
+		grid-template-columns: 1fr;
 	}
 }
