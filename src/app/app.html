@@ -46,11 +46,43 @@
 
       <div class="backend-grid" role="group" aria-label="Benchmark Backends">
         @for (backend of backends; track backend.key) {
-          <button class="backend-button" type="button" [attr.data-backend]="backend.key">
+          <button
+            class="backend-button"
+            type="button"
+            [class.is-selected]="backend.key === selectedBackendKey"
+            [attr.data-backend]="backend.key"
+            (click)="selectBackend(backend.key)"
+          >
             {{ backend.label }}
           </button>
         }
       </div>
+
+      <section class="result-panel" aria-label="Benchmark Ergebnisbereich">
+        <p class="panel-note">Ergebnisse</p>
+
+        <div class="result-grid">
+          <article class="result-card">
+            <p class="result-label">Backend</p>
+            <p class="result-value">{{ selectedBackendLabel }}</p>
+          </article>
+
+          <article class="result-card">
+            <p class="result-label">Letzte Zeit</p>
+            <p class="result-value">{{ lastDurationDisplay }}</p>
+          </article>
+
+          <article class="result-card">
+            <p class="result-label">Average</p>
+            <p class="result-value">{{ averageDurationDisplay }}</p>
+          </article>
+
+          <article class="result-card">
+            <p class="result-label">Status</p>
+            <p class="result-value">{{ benchmarkStatus }}</p>
+          </article>
+        </div>
+      </section>
     </div>
   </section>
 </main>

@@ -183,6 +183,52 @@ h1 {
 	transform: translateY(0);
 }
 
+.backend-button.is-selected {
+	border-color: #8b5f3f;
+	background: #f4e7da;
+	box-shadow: inset 0 0 0 1px rgba(139, 95, 63, 0.35);
+}
+
+.result-panel {
+	margin-top: 0.35rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.result-grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0.6rem;
+}
+
+.result-card {
+	margin: 0;
+	padding: 0.7rem;
+	border-radius: 10px;
+	border: 1px solid #cfbead;
+	background: #fffdf9;
+	display: flex;
+	flex-direction: column;
+	gap: 0.25rem;
+}
+
+.result-label {
+	margin: 0;
+	font-size: 0.78rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #7a6554;
+}
+
+.result-value {
+	margin: 0;
+	font-size: 1rem;
+	font-weight: 800;
+	color: #2f241c;
+}
+
 @media (max-width: 720px) {
 	.benchmark-shell {
 		padding: 1rem;
@@ -202,6 +248,10 @@ h1 {
 	}
 
 	.run-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.result-grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 }

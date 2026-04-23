@@ -8,6 +8,10 @@ import { Component } from '@angular/core';
 export class App {
   protected selectedDataPresetId = 'json-m';
   protected selectedRuns = 50;
+  protected selectedBackendKey: string | null = null;
+  protected lastDurationMs: number | null = null;
+  protected averageDurationMs: number | null = null;
+  protected benchmarkStatus = 'Idle';
 
   protected readonly dataPresets = [
     { id: 'json-s', label: 'JSON S', file: 'flat.json', sizeKb: 10 },
@@ -34,7 +38,24 @@ export class App {
     this.selectedRuns = runs;
   }
 
+  protected selectBackend(backendKey: string): void {
+    this.selectedBackendKey = backendKey;
+    this.benchmarkStatus = 'Ready';
+  }
+
   protected get selectedDataPreset() {
     return this.dataPresets.find((preset) => preset.id === this.selectedDataPresetId);
+  }
+
+  protected get selectedBackendLabel(): string {
+    return this.backends.find((backend) => backend.key === this.selectedBackendKey)?.label ?? '-';
+  }
+
+  protected get lastDurationDisplay(): string {
+    return this.lastDurationMs === null ? '-' : `${this.lastDurationMs.toFixed(2)} ms`;
+  }
+
+  protected get averageDurationDisplay(): string {
+    return this.averageDurationMs === null ? '-' : `${this.averageDurationMs.toFixed(2)} ms`;
   }
 }
