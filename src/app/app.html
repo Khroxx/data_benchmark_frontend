@@ -69,44 +69,67 @@
       <section class="result-panel" aria-label="Benchmark Ergebnisbereich">
         <p class="panel-note">Ergebnisse</p>
 
-        <div class="result-grid">
-          <article class="result-card">
-            <p class="result-label">Backend</p>
-            <p class="result-value">{{ selectedBackendLabel }}</p>
-          </article>
+        <p class="size-hint">Globaler Status: {{ benchmarkStatus }}</p>
 
-          <article class="result-card">
-            <p class="result-label">Letzte Zeit</p>
-            <p class="result-value">{{ lastDurationDisplay }}</p>
-          </article>
+        <div class="backend-result-grid">
+          @for (state of benchmarkStateCards; track state.key) {
+            <article class="backend-result-card" [class.is-active]="state.key === selectedBackendKey">
+              <div class="backend-result-header">
+                <p class="result-label">Backend</p>
+                <p class="result-heading">{{ state.label }}</p>
+              </div>
 
-          <article class="result-card">
-            <p class="result-label">Average</p>
-            <p class="result-value">{{ averageDurationDisplay }}</p>
-          </article>
+              <div class="result-grid">
+                <article class="result-card">
+                  <p class="result-label">Letzte Zeit</p>
+                  <p class="result-value">{{ formatDuration(state.lastDurationMs) }}</p>
+                </article>
 
-          <article class="result-card">
-            <p class="result-label">Median</p>
-            <p class="result-value">{{ medianDurationDisplay }}</p>
-          </article>
+                <article class="result-card">
+                  <p class="result-label">Average</p>
+                  <p class="result-value">{{ formatDuration(state.averageDurationMs) }}</p>
+                </article>
 
-          <article class="result-card">
-            <p class="result-label">Status</p>
-            <p class="result-value">{{ benchmarkStatus }}</p>
-          </article>
+                <article class="result-card">
+                  <p class="result-label">Median</p>
+                  <p class="result-value">{{ formatDuration(state.medianDurationMs) }}</p>
+                </article>
+
+                <article class="result-card">
+                  <p class="result-label">Runs</p>
+                  <p class="result-value">{{ state.runs ?? '-' }}</p>
+                </article>
+
+                <article class="result-card">
+                  <p class="result-label">Bytes</p>
+                  <p class="result-value">{{ state.dataBytes ?? '-' }}</p>
+                </article>
+
+                <article class="result-card">
+                  <p class="result-label">Processed</p>
+                  <p class="result-value">{{ state.processedBytes ?? '-' }}</p>
+                </article>
+
+                <article class="result-card result-card--wide">
+                  <p class="result-label">Status</p>
+                  <p class="result-value">{{ state.status }}</p>
+                </article>
+              </div>
+
+              @if (state.error) {
+                <p class="feedback-message is-error">Fehler: {{ state.error }}</p>
+              }
+
+              @if (state.warnings.length > 0) {
+                <div class="feedback-message is-warning">
+                  @for (warning of state.warnings; track warning) {
+                    <p>{{ warning }}</p>
+                  }
+                </div>
+              }
+            </article>
+          }
         </div>
-
-        @if (benchmarkError) {
-          <p class="feedback-message is-error">Fehler: {{ benchmarkError }}</p>
-        }
-
-        @if (benchmarkWarnings.length > 0) {
-          <div class="feedback-message is-warning">
-            @for (warning of benchmarkWarnings; track warning) {
-              <p>{{ warning }}</p>
-            }
-          </div>
-        }
       </section>
     </div>
   </section>

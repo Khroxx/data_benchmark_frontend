@@ -11,10 +11,26 @@ type BenchmarkResponse = {
   average_ms: number;
   median_ms: number;
   data_bytes: number;
+  processed_bytes?: number;
+  warmup_ms?: number;
   generated: boolean;
   server_time: string;
   warnings?: string[];
   error?: string;
+};
+
+type BackendBenchmarkState = {
+  key: BackendKey;
+  label: string;
+  lastDurationMs: number | null;
+  averageDurationMs: number | null;
+  medianDurationMs: number | null;
+  status: string;
+  error: string | null;
+  warnings: string[];
+  dataBytes: number | null;
+  processedBytes: number | null;
+  runs: number | null;
 };
 
 @Component({
@@ -28,13 +44,8 @@ export class App {
 
   protected selectedDataPresetId = 'json-m';
   protected selectedRuns = 50;
-  protected selectedBackendKey: string | null = null;
-  protected lastDurationMs: number | null = null;
-  protected averageDurationMs: number | null = null;
-  protected medianDurationMs: number | null = null;
+  protected selectedBackendKey: BackendKey | null = null;
   protected benchmarkStatus = 'Idle';
-  protected benchmarkError: string | null = null;
-  protected benchmarkWarnings: string[] = [];
   protected isRunningBenchmark = false;
 
   private readonly backendEndpoints: Record<BackendKey, string> = {
@@ -61,6 +72,13 @@ export class App {
     { key: 'django', label: 'Django' },
   ];
 
+  protected readonly benchmarkStates: Record<BackendKey, BackendBenchmarkState> = {
+    golang: this.createBenchmarkState('golang', 'Golang'),
+    spring: this.createBenchmarkState('spring', 'Spring Boot'),
+    dotnet: this.createBenchmarkState('dotnet', '.Net'),
+    django: this.createBenchmarkState('django', 'Django'),
+  };
+
   protected selectDataPreset(presetId: string): void {
     if (this.isRunningBenchmark) {
       return;
@@ -77,28 +95,24 @@ export class App {
     this.selectedRuns = runs;
   }
 
-  protected selectBackend(backendKey: string): void {
-    this.selectedBackendKey = backendKey;
-    this.benchmarkStatus = 'Ready';
-  }
-
   protected async runBackendRequest(backendKey: BackendKey): Promise<void> {
     if (this.isRunningBenchmark) {
       return;
     }
 
     const selectedPreset = this.selectedDataPreset;
-
     if (!selectedPreset) {
       this.benchmarkStatus = 'No preset selected';
       return;
     }
 
-    this.selectBackend(backendKey);
+    const benchmarkState = this.benchmarkStates[backendKey];
+    this.selectedBackendKey = backendKey;
     this.isRunningBenchmark = true;
-    this.benchmarkError = null;
-    this.benchmarkWarnings = [];
-    this.benchmarkStatus = `Running ${backendKey} benchmark...`;
+    this.benchmarkStatus = `Running ${benchmarkState.label} benchmark...`;
+    benchmarkState.status = 'Running...';
+    benchmarkState.error = null;
+    benchmarkState.warnings = [];
     this.changeDetectorRef.detectChanges();
 
     const endpoint = this.backendEndpoints[backendKey];
@@ -122,18 +136,27 @@ export class App {
       const fallbackAverageMs = roundTripDurationMs / Math.max(result.runs, 1);
       const serverLastDurationMs = result.durations.at(-1) ?? null;
 
-      this.lastDurationMs = serverLastDurationMs && serverLastDurationMs > 0 ? serverLastDurationMs : roundTripDurationMs;
-      this.averageDurationMs = result.average_ms > 0 ? result.average_ms : fallbackAverageMs;
-      this.medianDurationMs = result.median_ms > 0 ? result.median_ms : fallbackAverageMs;
-      this.benchmarkWarnings = result.warnings ?? [];
-      this.benchmarkStatus = `Completed ${result.runs} run(s), ${result.data_bytes} bytes`;
+      benchmarkState.lastDurationMs =
+        serverLastDurationMs !== null && serverLastDurationMs > 0 ? serverLastDurationMs : roundTripDurationMs;
+      benchmarkState.averageDurationMs = result.average_ms > 0 ? result.average_ms : fallbackAverageMs;
+      benchmarkState.medianDurationMs = result.median_ms > 0 ? result.median_ms : fallbackAverageMs;
+      benchmarkState.warnings = result.warnings ?? [];
+      benchmarkState.dataBytes = result.data_bytes;
+      benchmarkState.processedBytes = result.processed_bytes ?? null;
+      benchmarkState.runs = result.runs;
+      benchmarkState.status = `Completed ${result.runs} run(s)`;
+      this.benchmarkStatus = `${benchmarkState.label} completed`;
     } catch (error) {
-      this.lastDurationMs = null;
-      this.averageDurationMs = null;
-      this.medianDurationMs = null;
-      this.benchmarkWarnings = [];
-      this.benchmarkError = error instanceof Error ? error.message : 'Unknown request error';
-      this.benchmarkStatus = 'Request failed';
+      benchmarkState.lastDurationMs = null;
+      benchmarkState.averageDurationMs = null;
+      benchmarkState.medianDurationMs = null;
+      benchmarkState.warnings = [];
+      benchmarkState.dataBytes = null;
+      benchmarkState.processedBytes = null;
+      benchmarkState.runs = null;
+      benchmarkState.error = error instanceof Error ? error.message : 'Unknown request error';
+      benchmarkState.status = 'Request failed';
+      this.benchmarkStatus = `${benchmarkState.label} failed`;
     } finally {
       this.isRunningBenchmark = false;
       this.changeDetectorRef.detectChanges();
@@ -144,20 +167,28 @@ export class App {
     return this.dataPresets.find((preset) => preset.id === this.selectedDataPresetId);
   }
 
-  protected get selectedBackendLabel(): string {
-    return this.backends.find((backend) => backend.key === this.selectedBackendKey)?.label ?? '-';
+  protected get benchmarkStateCards(): BackendBenchmarkState[] {
+    return this.backends.map((backend) => this.benchmarkStates[backend.key]);
   }
 
-  protected get lastDurationDisplay(): string {
-    return this.lastDurationMs === null ? '-' : `${this.lastDurationMs.toFixed(2)} ms`;
+  protected formatDuration(value: number | null): string {
+    return value === null ? '-' : `${value.toFixed(2)} ms`;
   }
 
-  protected get averageDurationDisplay(): string {
-    return this.averageDurationMs === null ? '-' : `${this.averageDurationMs.toFixed(2)} ms`;
-  }
-
-  protected get medianDurationDisplay(): string {
-    return this.medianDurationMs === null ? '-' : `${this.medianDurationMs.toFixed(2)} ms`;
+  private createBenchmarkState(key: BackendKey, label: string): BackendBenchmarkState {
+    return {
+      key,
+      label,
+      lastDurationMs: null,
+      averageDurationMs: null,
+      medianDurationMs: null,
+      status: 'Idle',
+      error: null,
+      warnings: [],
+      dataBytes: null,
+      processedBytes: null,
+      runs: null,
+    };
   }
 
   private buildEndpoint(path: string): string {
