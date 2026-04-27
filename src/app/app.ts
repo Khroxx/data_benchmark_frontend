@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { environment } from '../environments/environment';
 
 type BackendKey = 'golang' | 'spring' | 'dotnet' | 'django';
 
@@ -35,10 +36,10 @@ export class App {
   protected isRunningBenchmark = false;
 
   private readonly backendEndpoints: Record<BackendKey, string> = {
-    golang: '/api/golang/benchmark',
-    spring: '/api/spring/benchmark',
-    dotnet: '/api/dotnet/benchmark',
-    django: '/api/django/benchmark',
+    golang: this.buildEndpoint('/api/golang/benchmark'),
+    spring: this.buildEndpoint('/api/spring/benchmark'),
+    dotnet: this.buildEndpoint('/api/dotnet/benchmark'),
+    django: this.buildEndpoint('/api/django/benchmark'),
   };
 
   protected readonly dataPresets = [
@@ -148,5 +149,14 @@ export class App {
 
   protected get medianDurationDisplay(): string {
     return this.medianDurationMs === null ? '-' : `${this.medianDurationMs.toFixed(2)} ms`;
+  }
+
+  private buildEndpoint(path: string): string {
+    const baseUrl = environment.apiBaseUrl.trim();
+    if (!baseUrl) {
+      return path;
+    }
+
+    return `${baseUrl.replace(/\/$/, '')}${path}`;
   }
 }

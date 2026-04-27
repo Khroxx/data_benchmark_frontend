@@ -2,11 +2,12 @@
   "name": "data-benchmark-frontend",
   "version": "0.0.0",
   "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "sync-env": "node scripts/sync-env.mjs",
+    "ng": "node scripts/sync-env.mjs && ng",
+    "start": "node scripts/sync-env.mjs && ng serve",
+    "build": "node scripts/sync-env.mjs && ng build",
+    "watch": "node scripts/sync-env.mjs && ng build --watch --configuration development",
+    "test": "node scripts/sync-env.mjs && ng test"
   },
   "private": true,
   "packageManager": "npm@11.13.0",

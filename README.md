@@ -27,6 +27,21 @@ npm 11.13.0
 
 The project also includes [.nvmrc](/home/bari/test/practice/data_benchmark_frontend/.nvmrc).
 
+## Environment
+
+This repo is intentionally clone-and-run friendly. There are no private frontend secrets required for local testing.
+
+Public example env file:
+
+```bash
+cp .env.example .env
+```
+
+Current public variables:
+
+- `FRONTEND_API_BASE_URL=` for an optional absolute backend base URL
+- `NODE_ENV=development`
+
 ## Local development
 
 Install dependencies:
