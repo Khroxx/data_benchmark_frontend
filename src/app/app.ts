@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, inject } from '@angular/core';
 import { environment } from '../environments/environment';
 
 type BackendKey = 'golang' | 'spring' | 'dotnet' | 'django';
@@ -24,6 +24,8 @@ type BenchmarkResponse = {
   styleUrl: './app.scss',
 })
 export class App {
+  private readonly changeDetectorRef = inject(ChangeDetectorRef);
+
   protected selectedDataPresetId = 'json-m';
   protected selectedRuns = 50;
   protected selectedBackendKey: string | null = null;
@@ -97,6 +99,7 @@ export class App {
     this.benchmarkError = null;
     this.benchmarkWarnings = [];
     this.benchmarkStatus = `Running ${backendKey} benchmark...`;
+    this.changeDetectorRef.detectChanges();
 
     const endpoint = this.backendEndpoints[backendKey];
     const query = new URLSearchParams({
@@ -105,6 +108,7 @@ export class App {
       runs: String(this.selectedRuns),
     });
     const url = `${endpoint}?${query.toString()}`;
+    const requestStartedAt = performance.now();
 
     try {
       const response = await fetch(url, { method: 'GET' });
@@ -114,11 +118,15 @@ export class App {
         throw new Error(result.error ?? `HTTP ${response.status}`);
       }
 
-      this.lastDurationMs = result.durations.at(-1) ?? null;
-      this.averageDurationMs = result.average_ms;
-      this.medianDurationMs = result.median_ms;
+      const roundTripDurationMs = performance.now() - requestStartedAt;
+      const fallbackAverageMs = roundTripDurationMs / Math.max(result.runs, 1);
+      const serverLastDurationMs = result.durations.at(-1) ?? null;
+
+      this.lastDurationMs = serverLastDurationMs && serverLastDurationMs > 0 ? serverLastDurationMs : roundTripDurationMs;
+      this.averageDurationMs = result.average_ms > 0 ? result.average_ms : fallbackAverageMs;
+      this.medianDurationMs = result.median_ms > 0 ? result.median_ms : fallbackAverageMs;
       this.benchmarkWarnings = result.warnings ?? [];
-      this.benchmarkStatus = `Completed ${result.runs} run(s)`;
+      this.benchmarkStatus = `Completed ${result.runs} run(s), ${result.data_bytes} bytes`;
     } catch (error) {
       this.lastDurationMs = null;
       this.averageDurationMs = null;
@@ -128,6 +136,7 @@ export class App {
       this.benchmarkStatus = 'Request failed';
     } finally {
       this.isRunningBenchmark = false;
+      this.changeDetectorRef.detectChanges();
     }
   }
 
