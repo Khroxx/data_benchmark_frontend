@@ -2,8 +2,23 @@ import { Component } from '@angular/core';
 
 type BackendKey = 'golang' | 'spring' | 'dotnet' | 'django';
 
+type BenchmarkResponse = {
+  type: string;
+  sizeKb: number;
+  runs: number;
+  durations: number[];
+  average_ms: number;
+  median_ms: number;
+  data_bytes: number;
+  generated: boolean;
+  server_time: string;
+  warnings?: string[];
+  error?: string;
+};
+
 @Component({
   selector: 'app-root',
+  standalone: true,
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
@@ -13,7 +28,11 @@ export class App {
   protected selectedBackendKey: string | null = null;
   protected lastDurationMs: number | null = null;
   protected averageDurationMs: number | null = null;
+  protected medianDurationMs: number | null = null;
   protected benchmarkStatus = 'Idle';
+  protected benchmarkError: string | null = null;
+  protected benchmarkWarnings: string[] = [];
+  protected isRunningBenchmark = false;
 
   private readonly backendEndpoints: Record<BackendKey, string> = {
     golang: '/api/golang/benchmark',
@@ -40,10 +59,18 @@ export class App {
   ];
 
   protected selectDataPreset(presetId: string): void {
+    if (this.isRunningBenchmark) {
+      return;
+    }
+
     this.selectedDataPresetId = presetId;
   }
 
   protected selectRuns(runs: number): void {
+    if (this.isRunningBenchmark) {
+      return;
+    }
+
     this.selectedRuns = runs;
   }
 
@@ -53,6 +80,10 @@ export class App {
   }
 
   protected async runBackendRequest(backendKey: BackendKey): Promise<void> {
+    if (this.isRunningBenchmark) {
+      return;
+    }
+
     const selectedPreset = this.selectedDataPreset;
 
     if (!selectedPreset) {
@@ -61,7 +92,10 @@ export class App {
     }
 
     this.selectBackend(backendKey);
-    this.benchmarkStatus = 'Requesting...';
+    this.isRunningBenchmark = true;
+    this.benchmarkError = null;
+    this.benchmarkWarnings = [];
+    this.benchmarkStatus = `Running ${backendKey} benchmark...`;
 
     const endpoint = this.backendEndpoints[backendKey];
     const query = new URLSearchParams({
@@ -73,15 +107,26 @@ export class App {
 
     try {
       const response = await fetch(url, { method: 'GET' });
+      const result = (await response.json()) as BenchmarkResponse;
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+        throw new Error(result.error ?? `HTTP ${response.status}`);
       }
 
-      await response.text();
-      this.benchmarkStatus = 'Response OK';
-    } catch {
+      this.lastDurationMs = result.durations.at(-1) ?? null;
+      this.averageDurationMs = result.average_ms;
+      this.medianDurationMs = result.median_ms;
+      this.benchmarkWarnings = result.warnings ?? [];
+      this.benchmarkStatus = `Completed ${result.runs} run(s)`;
+    } catch (error) {
+      this.lastDurationMs = null;
+      this.averageDurationMs = null;
+      this.medianDurationMs = null;
+      this.benchmarkWarnings = [];
+      this.benchmarkError = error instanceof Error ? error.message : 'Unknown request error';
       this.benchmarkStatus = 'Request failed';
+    } finally {
+      this.isRunningBenchmark = false;
     }
   }
 
@@ -99,5 +144,9 @@ export class App {
 
   protected get averageDurationDisplay(): string {
     return this.averageDurationMs === null ? '-' : `${this.averageDurationMs.toFixed(2)} ms`;
+  }
+
+  protected get medianDurationDisplay(): string {
+    return this.medianDurationMs === null ? '-' : `${this.medianDurationMs.toFixed(2)} ms`;
   }
 }

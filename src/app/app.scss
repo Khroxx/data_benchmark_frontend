@@ -150,6 +150,13 @@ h1 {
 	box-shadow: 0 6px 16px rgba(72, 49, 28, 0.12);
 }
 
+.preset-button:disabled,
+.run-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.7;
+	box-shadow: none;
+}
+
 .preset-button.is-selected,
 .run-button.is-selected {
 	border-color: #8b5f3f;
@@ -179,6 +186,13 @@ h1 {
 	box-shadow: 0 8px 20px rgba(72, 49, 28, 0.16);
 }
 
+.backend-button:disabled {
+	cursor: not-allowed;
+	opacity: 0.8;
+	transform: none;
+	box-shadow: none;
+}
+
 .backend-button:active {
 	transform: translateY(0);
 }
@@ -187,6 +201,10 @@ h1 {
 	border-color: #8b5f3f;
 	background: #f4e7da;
 	box-shadow: inset 0 0 0 1px rgba(139, 95, 63, 0.35);
+}
+
+.backend-button.is-loading {
+	background: linear-gradient(180deg, #f7eadf 0%, #ead2bc 100%);
 }
 
 .result-panel {
@@ -198,7 +216,7 @@ h1 {
 
 .result-grid {
 	display: grid;
-	grid-template-columns: repeat(4, minmax(0, 1fr));
+	grid-template-columns: repeat(5, minmax(0, 1fr));
 	gap: 0.6rem;
 }
 
@@ -227,6 +245,33 @@ h1 {
 	font-size: 1rem;
 	font-weight: 800;
 	color: #2f241c;
+}
+
+.feedback-message {
+	margin: 0;
+	padding: 0.8rem 0.9rem;
+	border-radius: 10px;
+	font-size: 0.9rem;
+	line-height: 1.45;
+}
+
+.feedback-message p {
+	margin: 0;
+}
+
+.is-error {
+	border: 1px solid #d08b7f;
+	background: #fbe6e2;
+	color: #7c2e22;
+}
+
+.is-warning {
+	border: 1px solid #d2b47c;
+	background: #fbf1d9;
+	color: #6a4b11;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
 }
 
 @media (max-width: 720px) {

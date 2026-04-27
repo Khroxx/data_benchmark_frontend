@@ -15,6 +15,7 @@
               class="preset-button"
               type="button"
               [class.is-selected]="preset.id === selectedDataPresetId"
+              [disabled]="isRunningBenchmark"
               (click)="selectDataPreset(preset.id)"
             >
               <span class="preset-title">{{ preset.label }}</span>
@@ -32,6 +33,7 @@
               class="run-button"
               type="button"
               [class.is-selected]="runs === selectedRuns"
+              [disabled]="isRunningBenchmark"
               (click)="selectRuns(runs)"
             >
               {{ runs }}x
@@ -50,10 +52,16 @@
             class="backend-button"
             type="button"
             [class.is-selected]="backend.key === selectedBackendKey"
+            [class.is-loading]="isRunningBenchmark && backend.key === selectedBackendKey"
             [attr.data-backend]="backend.key"
+            [disabled]="isRunningBenchmark"
             (click)="runBackendRequest(backend.key)"
           >
-            {{ backend.label }}
+            @if (isRunningBenchmark && backend.key === selectedBackendKey) {
+              Running {{ backend.label }}...
+            } @else {
+              {{ backend.label }}
+            }
           </button>
         }
       </div>
@@ -78,10 +86,27 @@
           </article>
 
           <article class="result-card">
+            <p class="result-label">Median</p>
+            <p class="result-value">{{ medianDurationDisplay }}</p>
+          </article>
+
+          <article class="result-card">
             <p class="result-label">Status</p>
             <p class="result-value">{{ benchmarkStatus }}</p>
           </article>
         </div>
+
+        @if (benchmarkError) {
+          <p class="feedback-message is-error">Fehler: {{ benchmarkError }}</p>
+        }
+
+        @if (benchmarkWarnings.length > 0) {
+          <div class="feedback-message is-warning">
+            @for (warning of benchmarkWarnings; track warning) {
+              <p>{{ warning }}</p>
+            }
+          </div>
+        }
       </section>
     </div>
   </section>
