@@ -2,6 +2,17 @@
 
 This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
 
+## Runtime requirements
+
+This frontend is maintained against:
+
+```bash
+Node.js 24.2.0
+npm 11.13.0
+```
+
+Angular 21 also requires a modern Node runtime. If `ng build` or `ng serve` reports an unsupported Node version, verify that your shell is actually using the expected `node` binary before running the project.
+
 ## Development server
 
 To start a local development server, run:
