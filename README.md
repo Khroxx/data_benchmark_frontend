@@ -1,70 +1,65 @@
-# DataBenchmarkFrontend
+# Data Benchmark Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.8.
+Angular frontend for the benchmark dashboard. It lets you choose a payload preset, choose a run count, and trigger benchmark requests against the Go, Spring Boot, .NET, and Django backends.
 
-## Runtime requirements
+## Clone
 
-This frontend is maintained against:
+SSH:
+
+```bash
+git clone git@github.com:Khroxx/data_benchmark_frontend.git
+```
+
+HTTPS:
+
+```bash
+git clone https://github.com/Khroxx/data_benchmark_frontend.git
+```
+
+## Runtime
+
+Recommended local toolchain:
 
 ```bash
 Node.js 24.2.0
 npm 11.13.0
 ```
 
-Angular 21 also requires a modern Node runtime. If `ng build` or `ng serve` reports an unsupported Node version, verify that your shell is actually using the expected `node` binary before running the project.
+The project also includes [.nvmrc](/home/bari/test/practice/data_benchmark_frontend/.nvmrc).
 
-## Development server
+## Local development
 
-To start a local development server, run:
-
-```bash
-ng serve
-```
-
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Install dependencies:
 
 ```bash
-ng generate component component-name
+npm ci
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Start the Angular dev server:
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
-
-To build the project run:
+Create a production build:
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Run tests:
 
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
+## Backend endpoints
 
-For end-to-end (e2e) testing, run:
+The UI expects these routes to exist:
 
-```bash
-ng e2e
-```
+- `/api/golang/benchmark`
+- `/api/spring/benchmark`
+- `/api/dotnet/benchmark`
+- `/api/django/benchmark`
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Each backend is called with query params such as `type`, `size` and `runs`.
